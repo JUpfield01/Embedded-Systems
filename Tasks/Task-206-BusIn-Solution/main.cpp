@@ -1,4 +1,6 @@
 #include "mbed.h"
+#include "uop_msb.h"
+using namespace uop_msb;
 // Hardware Definitions
 #define TRAF_GRN1_PIN PC_6
 #define TRAF_YEL1_PIN PC_3

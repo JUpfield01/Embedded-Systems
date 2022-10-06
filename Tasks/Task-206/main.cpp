@@ -21,40 +21,13 @@ DigitalIn SW3(BTN2_PIN);
 DigitalInOut SW4(BTN3_PIN,PIN_INPUT,PullDown,0);
 DigitalInOut SW5(BTN4_PIN,PIN_INPUT,PullDown,0);
 
-BusIn SW(BTN1_PIN, BTN2_PIN);
-
 // Outputs
 DigitalOut ledRed(TRAF_RED1_PIN);
 DigitalOut ledYel(TRAF_YEL1_PIN);
 DigitalOut ledGrn(TRAF_GRN1_PIN);
 
-int switchVal;
-
 int main()
 {
-    while (true) {
-        switchVal = SW;
-        printf("%d\n",switchVal);
-        switch(SW)
-        {
-            case 1:
-                ledRed = 1;
-                printf("red on\n");
-                break;
-            case 2: 
-                ledYel=1;
-                printf("yel on\n");
-                break;
-            default:
-                ledRed=0;
-                ledYel=0;
-                printf("off\n");
-                
-        }
-        //switchVal = SW;
-        //printf("%d\n",switchVal);
-    }
-    /*
     while (true) {
         if (SW2 == 1) {
             ledRed = 1;
@@ -67,7 +40,14 @@ int main()
         } else {
             ledYel = 0;
         }
+
+        if (SW4 == 1 and SW5 == 1) {
+            ledRed = 1;
+            ledYel = 1;
+            ledGrn = 1;
+        } else {
+            ledRed = 0, ledYel=ledGrn=ledRed;
+        }
     }
-    */
 }
 

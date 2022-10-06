@@ -2,6 +2,8 @@
 #include <cstring>
 using namespace uop_msb;
 
+#define TRAF_GRN2_PIN PC_9
+
 // Inputs
 DigitalIn SWB(USER_BUTTON); // THIS IS THE BLUE BUTTON
 DigitalIn SW2(BTN1_PIN);    // SW2
@@ -12,10 +14,13 @@ DigitalOut ledRed(TRAF_RED1_PIN);
 DigitalOut ledYel(TRAF_YEL1_PIN);
 DigitalOut ledGrn(TRAF_GRN1_PIN);
 
+DigitalInOut grnLED(TRAF_GRN2_PIN, PinDirection::PIN_OUTPUT, PinMode::OpenDrainNoPull, 1);
+
 // Timers (modified version from Timer)
 TimerCompat tmr_debounce2;
 TimerCompat tmr_debounce3;
 TimerCompat tmr_flash;
+TimerCompat tmr_blue;
 
 // Switch states
 typedef enum {
@@ -32,6 +37,11 @@ int main() {
   // Start flashing timer
   tmr_flash.start();
 
+  int blueSwitch = SWB;
+  int prev_blueSwitch = SWB;
+
+  int delay_ms = 500;
+
   while (true) {
 
     // READ INPUTS **WITHOUT** BLOCKING
@@ -41,10 +51,27 @@ int main() {
     long long sw2_time = tmr_debounce2.read_ms();
     long long sw3_time = tmr_debounce3.read_ms();
 
+    blueSwitch = SWB;
+    grnLED = !blueSwitch;
     // Update yellow LED state and mealy outputs
-    if (flash_time >= 500) {
+    if (flash_time >= delay_ms) {
       ledYel = !ledYel;
       tmr_flash.reset();
+    }
+
+    if (blueSwitch!=prev_blueSwitch)
+    {
+        tmr_blue.start();
+
+        if(tmr_blue.read_ms()>=50 && prev_blueSwitch==1)
+        {
+            tmr_blue.reset();
+            printf("\n\nTo set the delay (in ms), type in an integer number and press return\n");
+            
+            int parsed = scanf("%d", &delay_ms);
+            printf("You entered %d correct integer values. The value was %dms\n", parsed, delay_ms);
+            
+        }
     }
 
     // Update switch2 state machine and mealy outputs
@@ -119,5 +146,8 @@ int main() {
     default:
       sw_state3 = WAIT_FOR_PRESS;
     }
+
+    prev_blueSwitch = blueSwitch;
+
   }
 }

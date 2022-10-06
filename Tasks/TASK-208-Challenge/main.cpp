@@ -12,32 +12,55 @@ DigitalOut ledGrn(TRAF_GRN1_PIN);
 
 // Timers (modified version from Timer)
 TimerCompat tmr_flash;
+TimerCompat tmr_debounceSW2;
+TimerCompat tmr_debounceSW3;
 
-// THE CODE BELOW IS NOT A SOLUTION
-//
-// IT IS FUNDAMENTALLY FLAWED (AND INCOMPLETE)
-//
-//
+
+// Function to check flash timer and reset if being flashed.
+void tmr_flash_read()
+{
+    if(tmr_flash.read_ms()>=500)
+        {
+            ledYel = !ledYel;
+            tmr_flash.reset();
+        }
+}
 
 int main()
 {
+    int SW2val=0, SW3val=0;
+    int prev_SW2val=0, prev_SW3val=0;
     //Start flashing timer
     tmr_flash.start();
 
     while (true) {
 
-        //Wait for switch press and release (by BLOCKING)
-        while (SW2.read() == 0);
-        ledRed = !ledRed;
-        wait_us(300000);
+        tmr_flash_read();
+        SW2val = SW2;
+        SW3val = SW3;
 
-        while (SW2.read() == 1);
-        wait_us(300000);        
+        if(prev_SW2val != SW2val)
+        {
+            tmr_debounceSW2.start();
+                if(tmr_debounceSW2.read_ms()>=50&&prev_SW2val==1)
+                {
+                    ledRed = !ledRed;
+                    tmr_debounceSW2.reset();
+                }
+        }
 
-        //Toggle Yellow LED
-        ledYel = !ledYel;
-        while (tmr_flash.read_ms() < 500);
-        tmr_flash.reset();
+        if(prev_SW3val != SW3val)
+        {
+            tmr_debounceSW3.start();
+                if(tmr_debounceSW3.read_ms()>=50&&prev_SW3val==1)
+                {
+                    ledGrn = !ledGrn;
+                    tmr_debounceSW3.reset();
+                }
+        }
+
+        prev_SW2val = SW2val;
+        prev_SW3val = SW3val;
     }
 }
 

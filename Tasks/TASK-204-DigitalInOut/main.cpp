@@ -12,18 +12,33 @@
 #define TRAF_WHITE_PIN PF_10
 
 //BusInOut Traffic_Lights_2(PC_7,PC_8,PC_9);
-DigitalInOut grnLED(TRAF_GRN2_PIN, PinDirection::PIN_OUTPUT, PinMode::OpenDrainNoPull, 0);
+//DigitalInOut grnLED(TRAF_GRN2_PIN, PinDirection::PIN_OUTPUT, PinMode::OpenDrainNoPull, 0);
 
-DigitalInOut redLED(TRAF_RED2_PIN, PinDirection::PIN_OUTPUT, PinMode::OpenDrainNoPull, 0);
+//DigitalInOut redLED(TRAF_RED2_PIN, PinDirection::PIN_OUTPUT, PinMode::OpenDrainNoPull, 0);
+
+BusOut leds(TRAF_GRN1_PIN, TRAF_RED1_PIN);
+
+int test;
 
 int main()
 {
+    leds=2;
     //Note the logic
     while (true) {
+        
+        /*
         grnLED = 1, redLED = !grnLED;
         wait_us(1000000);
         grnLED = 0, redLED = !grnLED;
         wait_us(1000000);
+        */
+        
+
+        leds=1;
+        wait_us(1000000);
+        leds =2;
+        wait_us(1000000);
+
     }
 }
 
