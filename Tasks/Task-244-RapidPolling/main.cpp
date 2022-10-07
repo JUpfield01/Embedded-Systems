@@ -100,7 +100,7 @@ int main()
         }
 
         // LED
-        if (tm >= 250ms) {
+        if (tm >= ((count+1)*10ms)) {
             greenLED = !greenLED;
             tmr.reset();
         }
