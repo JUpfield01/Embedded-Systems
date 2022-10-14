@@ -9,6 +9,7 @@
 #ifndef ComplexNumber_hpp
 #define ComplexNumber_hpp
 
+#include "mbed.h"
 #include <stdio.h>
 #include <math.h>
 #include <iostream>
@@ -72,13 +73,13 @@ public:
     
     //Subtract in place
     void subtract(const ComplexNumber& c) {
-        this->real -=c.real;
-        this->imag -=c.imag;
+        this->real =real-c.real;
+        this->imag =imag-c.imag;
     }
     
     //Subtract from
     ComplexNumber subtractFrom(const ComplexNumber& c) { 
-        return ComplexNumber(this->real-c.real, this->imag+c.imag);   
+        return ComplexNumber(this->real-c.real, this->imag-c.imag);   
     }
     
     //Add to
@@ -88,37 +89,43 @@ public:
 
     //Negate in place
     void negate() {
-        this->real -= real;
-        this->imag -= imag;
+        this->real = -real;
+        this->imag = -imag;
     }
     
     //Negate and return copy
     ComplexNumber negated() {
-        return ComplexNumber(this->real = -real, this->imag = -imag);
+        ComplexNumber c;
+        c.real = -this->real;
+        c.imag = -this->imag;
+        return c;
     }
    
-    //-----------| RERQUIRES ERROR CHECKING |-----------
+    //-----------| RERQUIRES ERROR CHECKING |-----------//
     
     //Multiply by a double
-    void ComplexNumber multiply(double multiplier) {
+    void multiply(double multiplier) {
         this->real = this->real*multiplier;
         this->imag = this->imag*multiplier;
     }
     
     //Multiply two complex numbers ---| RERQUIRES ERROR CHECKING |---
-    void ComplexNumber multiplyWith(const ComplexNumber& c) {
-        this->real = ((this->real*c.real)-(this->imag*c.imag));
-        this->real = ((this->real*c.imag)+(this->imag*c.real));
+    void multiplyWith(const ComplexNumber& c) {
+        ComplexNumber temp(this->real,this->imag);
+
+        this->real = ((temp.real*c.real)-(temp.imag*c.imag));
+        this->imag = ((temp.real*c.imag)+(temp.imag*c.real));
     }
     
-    void ComplexNumber divide(double quotient) {
+    void divide(double quotient) {
         this->real = real/quotient;
         this->imag = imag/quotient;
     }
     
-    void ComplexNumber divideWith(const ComplexNumber& c) {
-        this->real = (((real*c.real)+(imag*c.imag))/((pow(c.real,2)+(pow(c.imag,2))))); //cba to write this->real
-        this->imag = (((imag*c.real)-(real*c.imag))/((pow(c.real,2)+(pow(c.imag,2))))); //cba to write this->imag
+    void divideWith(const ComplexNumber& c) {
+        ComplexNumber temp(this->real,this->imag);
+        this->real = (((temp.real*c.real)+(temp.imag*c.imag))/((pow(c.real,2)+(pow(c.imag,2))))); //cba to write this->real
+        this->imag = (((temp.imag*c.real)-(temp.real*c.imag))/((pow(c.real,2)+(pow(c.imag,2))))); //cba to write this->imag
     }
 
     
