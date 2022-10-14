@@ -31,11 +31,13 @@ public:
         this->imag = i;
     }
     
+    
     //Copy constructors
     ComplexNumber(const ComplexNumber& c) {
         this->imag = c.imag;
         this->real = c.real;
     }
+    
 
     //Destructor
     ~ComplexNumber() {
@@ -70,6 +72,14 @@ public:
     //Add
     ComplexNumber addedTo(const ComplexNumber& c) {
         return ComplexNumber(this->real+c.real, this->imag+c.imag);
+    }
+
+    ComplexNumber negate() {
+        return ComplexNumber(this->real = -real, this->imag = -imag);
+    }
+
+    ComplexNumber negated() {
+        return ComplexNumber(this->real = -real, this->imag = -imag);
     }
     
     //Display

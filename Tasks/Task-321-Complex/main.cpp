@@ -15,6 +15,10 @@ int main()
     c3.conjugate();
     c3.display();
 
+    c3.negate();
+    printf("c3 negated: ");
+    c3.display();
+
     //Create new scope
     {
         ComplexNumber test(1.0);
