@@ -1,8 +1,7 @@
 #include "TrafficLight.h"
 
 //Contructor
-TrafficLight::TrafficLight(PinName redPin, PinName yellowPin, PinName greenPin) 
-                                                        : redLED(redPin), yellowLED(yellowPin), greenLED(greenPin)
+TrafficLight::TrafficLight(PinName redPin, PinName yellowPin, PinName greenPin) : redLED(redPin), yellowLED(yellowPin), greenLED(greenPin)
 {
     // These objects are already initialised in the member initialisation list above
     redLED = 1;
