@@ -29,8 +29,23 @@ void TrafficLight::flashYellow(bool flash) {
     t.detach(); //Turn off ticker
     if (flash) {
         //Turn on ticker ..... Hmmm, interrupts!
-        t.attach(callback(this, &TrafficLight::yellowFlashISR), 200ms);
+        //t.attach(callback(this, &TrafficLight::yellowFlashISR), 200ms);
+        t.attach(callback(this, &TrafficLight::yellowFlashISR), flashInterval);
     }
+}
+
+void TrafficLight::stop() {
+    redLED = 1;
+    yellowLED = 0;
+    greenLED = 0; 
+}
+
+void setFlashSpeed() {
+
+}
+
+double getFlashSpeed() {
+    return Flash
 }
 
 // Moore Machine - update outputs

@@ -19,10 +19,14 @@ class TrafficLight
     DigitalOut greenLED;
     Ticker t;
     LIGHT_STATE State;
+    microseconds flashInterval; 
 
     void yellowFlashISR();
     void flashYellow(bool flash);
     void updateOutput();
+    void stop();
+    void setFlashSpeed(double);
+    double getFlashSpeed();
 
     public:
     //Constructor
