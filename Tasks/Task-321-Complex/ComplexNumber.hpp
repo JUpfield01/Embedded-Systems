@@ -10,6 +10,7 @@
 #define ComplexNumber_hpp
 
 #include <stdio.h>
+#include <math.h>
 #include <iostream>
 using namespace std;
 
@@ -69,18 +70,57 @@ public:
         this->imag += c.imag;
     }
     
-    //Add
+    //Subtract in place
+    void subtract(const ComplexNumber& c) {
+        this->real -=c.real;
+        this->imag -=c.imag;
+    }
+    
+    //Subtract from
+    ComplexNumber subtractFrom(const ComplexNumber& c) { 
+        return ComplexNumber(this->real-c.real, this->imag+c.imag);   
+    }
+    
+    //Add to
     ComplexNumber addedTo(const ComplexNumber& c) {
         return ComplexNumber(this->real+c.real, this->imag+c.imag);
     }
 
-    ComplexNumber negate() {
-        return ComplexNumber(this->real = -real, this->imag = -imag);
+    //Negate in place
+    void negate() {
+        this->real -= real;
+        this->imag -= imag;
     }
-
+    
+    //Negate and return copy
     ComplexNumber negated() {
         return ComplexNumber(this->real = -real, this->imag = -imag);
     }
+   
+    //-----------| RERQUIRES ERROR CHECKING |-----------
+    
+    //Multiply by a double
+    void ComplexNumber multiplyWith(double multiplier) {
+        this->real = this->real*multiplier;
+        this->imag = this->imag*multiplier;
+    }
+    
+    //Multiply two complex numbers ---| RERQUIRES ERROR CHECKING |---
+    void ComplexNumber multiplyWith(const ComplexNumber& c) {
+        this->real = ((this->real*c.real)-(this->imag*c.imag));
+        this->real = ((this->real*c.imag)+(this->imag*c.real));
+    }
+    
+    void ComplexNumber divide(double quotient) {
+        this->real = real/quotient;
+        this->imag = iamg/quotient;
+    }
+    
+    void ComplexNumber divideWith(const ComplexNumber& c) {
+        this->real = (((real*c.real)+(imag*c.imag))/((pow(c.real,2)+(pow(c.imag,2))))); //cba to write this->real
+        this->imag = (((imag*c.real)-(real*c.imag))/((pow(c.real,2)+(pow(c.imag,2))))); //cba to write this->imag
+    }
+
     
     //Display
     void display() {
