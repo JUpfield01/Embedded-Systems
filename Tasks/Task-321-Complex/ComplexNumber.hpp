@@ -100,7 +100,7 @@ public:
     //-----------| RERQUIRES ERROR CHECKING |-----------
     
     //Multiply by a double
-    void ComplexNumber multiplyWith(double multiplier) {
+    void ComplexNumber multiply(double multiplier) {
         this->real = this->real*multiplier;
         this->imag = this->imag*multiplier;
     }
@@ -113,7 +113,7 @@ public:
     
     void ComplexNumber divide(double quotient) {
         this->real = real/quotient;
-        this->imag = iamg/quotient;
+        this->imag = imag/quotient;
     }
     
     void ComplexNumber divideWith(const ComplexNumber& c) {
