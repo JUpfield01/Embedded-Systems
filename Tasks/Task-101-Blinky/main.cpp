@@ -30,5 +30,7 @@ int main()
 
         // Wait 0.5 second
         wait_us(200000); 
+
+        DigitalOut greenLED(LED2);
     }
 }
