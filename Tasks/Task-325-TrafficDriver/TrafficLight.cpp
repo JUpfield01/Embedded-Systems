@@ -65,7 +65,6 @@ TrafficLight::TrafficLight(PinName redPin, PinName yellowPin, PinName greenPin) 
     yellowLED.mode(OpenDrainNoPull);
     greenLED.mode(OpenDrainNoPull);
 
-
     ledFlag=1;
     redLED = 1;
     yellowLED = 1;

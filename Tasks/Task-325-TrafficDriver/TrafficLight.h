@@ -46,9 +46,9 @@ class TrafficLight
 
     //TrafficLight(PinName redPin = TRAF_RED2_PIN, PinDirection redDir=PIN_OUTPUT, PinMode redMode=OpenDrainNoPull, int redValue=0,PinName yellowPin = TRAF_YEL2_PIN, PinName greenPin=TRAF_GRN2_PIN); //typical constructor call
 
-    TrafficLight(int ledChoice, PinName redPin = TRAF_RED1_PIN, PinName yellowPin = TRAF_YEL1_PIN, PinName greenPin=TRAF_GRN1_PIN); //typical constructor call
+    TrafficLight(int ledChoice, PinName redPin = TRAF_RED1_PIN, PinName yellowPin = TRAF_YEL1_PIN, PinName greenPin=TRAF_GRN1_PIN); // constructor call for open drain leds
 
-    TrafficLight(PinName redPin = TRAF_RED2_PIN, PinName yellowPin = TRAF_YEL2_PIN, PinName greenPin=TRAF_GRN2_PIN); //typical constructor call
+    TrafficLight(PinName redPin = TRAF_RED2_PIN, PinName yellowPin = TRAF_YEL2_PIN, PinName greenPin=TRAF_GRN2_PIN); //typical constructor call (default leds)
 
     //TrafficLight(PinName redPin, PinName yellowPin, PinName greenPin, int ledChoice=0); //typical constructor call
 

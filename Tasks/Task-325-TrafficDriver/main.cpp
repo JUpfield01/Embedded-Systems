@@ -4,8 +4,6 @@
 //TrafficLight lights1(); //Initalise Traffic light set using led choice defined in TrafficLight.h
 TrafficLight lights2, lights1(2); //Initalise Traffic light set using led choice defined in TrafficLight.h
 
-
-
 DigitalIn sw(USER_BUTTON);
 
 TrafficLight::LIGHT_STATE s;
