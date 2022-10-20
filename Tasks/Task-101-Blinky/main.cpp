@@ -21,16 +21,14 @@ int main()
         greenLED = 1; 
         redLED = 1; 
 
-        // Wait 0.5 second (1 million microseconds)
-        wait_us(200000); 
+        // Wait 0.2 second (1 million microseconds)
+        wait_us(100000); 
 
         // Turn LED OFF
         greenLED = 0;
         redLED = 0; 
 
-        // Wait 0.5 second
-        wait_us(200000); 
-
-        DigitalOut greenLED(LED2);
+        // Wait 0.2 second
+        wait_us(100000); 
     }
 }
