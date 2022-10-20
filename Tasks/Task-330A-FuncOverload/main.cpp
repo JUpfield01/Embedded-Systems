@@ -38,6 +38,9 @@ public:
     void setValue(string strVal) {
         _real = stod(strVal);
     }
+    void setValue(DoubleNumber n) {
+        _real = n._real;
+    }
 
     double getValue() {
         return _real;
@@ -59,6 +62,7 @@ int main()
     //setValue function overloading  
     n1.setValue(10);
     n2.setValue("-3.0");
+    n0.setValue(n1);
 
     cout << n0.getValue() + n1.getValue() + n2.getValue() << endl;
 
