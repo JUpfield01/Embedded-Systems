@@ -5,7 +5,7 @@
 #include <ratio>
 
 //Comment this next line to use simulated hardware
-#define USE_REAL_HW
+//#define USE_REAL_HW
 
 //Switch between real hardware and mocked
 #ifdef USE_REAL_HW

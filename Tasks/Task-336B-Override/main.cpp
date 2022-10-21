@@ -14,7 +14,7 @@ class Flashy : DigitalOut {
 
     void timerISR()  {
         //Call the baseclass version to toggle the GPIO
-        DigitalOut::write(1-this->read());
+        DigitalOut::write(1-this->read()); //works as when led is high, inverts by -1 so pin is 0. then 1-0 = 1 so high. 
     }
 
     void enable(bool en)

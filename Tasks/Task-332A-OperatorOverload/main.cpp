@@ -116,6 +116,12 @@ int main()
     DoubleNumber sum = (n0 + n1 + n2 + n3);
     cout << sum << endl;
 
+    n1 = "-3.0";
+
+    bool comparison=(n1==n2); 
+    cout << "n1 equal to n2? " << comparison <<endl;
+    
+
     while (true) {
 
     }

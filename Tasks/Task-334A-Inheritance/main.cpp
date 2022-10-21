@@ -27,7 +27,7 @@ int main()
     cout << (c0 + c1 + d0 + d1).asString();
 
     // Note how this works with both types, but only on the real parts
-    DoubleNumber sum1 = c0 + c1 + d0 + d1;
+    DoubleNumber sum1 = c0 + c1 + d0 + d1; // imag part not accounted for as invoking DoubleNumber class and not ComplexNumber
     cout << sum1 << endl;
 
     while (true) {
