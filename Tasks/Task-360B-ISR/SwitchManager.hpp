@@ -19,7 +19,10 @@ private:
 public:
   SwitchManager(PinName intInPin, PinName gpioPin)
       : switchInterrupt(intInPin), led(gpioPin) {
+    // Lock as using count (static variable)
+    CriticalSectionLock::enable(); 
     count = 0;
+    CriticalSectionLock::disable();
     // Listen for rising edge
     switchInterrupt.rise(callback(this, &SwitchManager::waitForRising));
   }
@@ -32,7 +35,16 @@ public:
   }
 
   //This is a STATIC member of the CLASS
-  static uint32_t getCount() { return count; }
+  static uint32_t getCount() { 
+    /*
+    This behaves the same as using: 
+    CriticalSectionLock::enable();
+    int tempCount = count;
+    CriticalSectionLock::disable();
+    return count;
+    */
+    CriticalSectionLock lock;
+    return count; }
 };
 
 #endif
