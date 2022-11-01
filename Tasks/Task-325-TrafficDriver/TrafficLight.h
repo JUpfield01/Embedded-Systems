@@ -19,7 +19,7 @@ class TrafficLight
 {
     public:
     typedef enum {STOP, READY, GO, WARNING} LIGHT_STATE;
-    typedef enum {LED_SET1, LED_SET2} LED_SET;
+    typedef enum {PUSH_PULL, OPEN_DRAIN} LIGHT_SET;
 
 
     private:
@@ -27,13 +27,13 @@ class TrafficLight
     DigitalInOut yellowLED;
     DigitalInOut greenLED;
 
-    int ledChoice=0;
-    int ledFlag=0;
-
     Ticker t;
+
     LIGHT_STATE State;
-    LED_SET chosenLEDS;
+
     microseconds flashInterval = 250ms; //Set default flash interval to 250 ms, causing it to flash 2 times per second
+
+    int ledFlag=0;
 
     void yellowFlashISR();
     void flashYellow(bool flash);
@@ -41,16 +41,10 @@ class TrafficLight
     
 
     public:
+    
+
     //Constructor
-    //TrafficLight(PinName redPin = TRAF_RED2_PIN, PinName yellowPin = TRAF_YEL2_PIN, PinName greenPin=TRAF_GRN2_PIN, LED_SET _chosenLEDS=LED_SET2); //default
-
-    //TrafficLight(PinName redPin = TRAF_RED2_PIN, PinDirection redDir=PIN_OUTPUT, PinMode redMode=OpenDrainNoPull, int redValue=0,PinName yellowPin = TRAF_YEL2_PIN, PinName greenPin=TRAF_GRN2_PIN); //typical constructor call
-
-    TrafficLight(int ledChoice, PinName redPin = TRAF_RED1_PIN, PinName yellowPin = TRAF_YEL1_PIN, PinName greenPin=TRAF_GRN1_PIN); // constructor call for open drain leds
-
-    TrafficLight(PinName redPin = TRAF_RED2_PIN, PinName yellowPin = TRAF_YEL2_PIN, PinName greenPin=TRAF_GRN2_PIN); //typical constructor call (default leds)
-
-    //TrafficLight(PinName redPin, PinName yellowPin, PinName greenPin, int ledChoice=0); //typical constructor call
+    TrafficLight(LIGHT_SET ledChoice);
 
     //Destructor
     ~TrafficLight();

@@ -54,6 +54,7 @@ int main()
     //Repeat until the blue button is pressed
     do 
     {
+        print_memory_info();
         //Get user data
         cout << "Enter sampling rate (Hz)" << endl;
         cin >> Fs;

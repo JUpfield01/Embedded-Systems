@@ -1,8 +1,9 @@
 #include "mbed.h"
 #include "TrafficLight.h"
 
-//TrafficLight lights1(); //Initalise Traffic light set using led choice defined in TrafficLight.h
-TrafficLight lights2, lights1(2); //Initalise Traffic light set using led choice defined in TrafficLight.h
+
+TrafficLight PUSH_PULL_LEDS(TrafficLight::LIGHT_SET::PUSH_PULL); 
+TrafficLight OPEN_DRAIN_LEDS(TrafficLight::LIGHT_SET::OPEN_DRAIN); 
 
 DigitalIn sw(USER_BUTTON);
 
@@ -30,8 +31,8 @@ int main()
         while (sw==0);
 
         //Update lights
-        s = lights1.nextState();
-        s2 = lights2.nextState();
+        s = PUSH_PULL_LEDS.nextState();
+        s2 = OPEN_DRAIN_LEDS.nextState();
 
         //Debounce switch
         wait_us(300000);
@@ -42,7 +43,7 @@ int main()
         //Switch debounce
         wait_us(300000);
 
-        printf("\nled flash speed: %f ms",lights1.getFlashSpeed());
+        printf("\nled flash speed: %f ms",PUSH_PULL_LEDS.getFlashSpeed());
 
         count++;
 

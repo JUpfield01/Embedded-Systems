@@ -40,7 +40,7 @@ bool hasDecreasedBy(T next, T delta)
 }
 
 //Function to add a sample to the a circular buffer and return the sum
-template<class T, class R, int N>
+template<class T, class R, int N=20>
 R addToBuffer(T nextSample)
 {
     //Again that static local trick 

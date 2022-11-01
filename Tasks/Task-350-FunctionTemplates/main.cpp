@@ -36,7 +36,7 @@ int main()
             led2 = 0;
         }
  
-        cout << "Mean: " << addToBuffer<uint16_t, double, 4>(uPot) << endl;
+        cout << "Mean: " << addToBuffer<uint16_t, double>(uPot) << endl;
         wait_us(500000);
     }
 }
