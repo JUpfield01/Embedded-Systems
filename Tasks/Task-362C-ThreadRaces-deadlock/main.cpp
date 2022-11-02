@@ -34,18 +34,24 @@ void countUp()
     //RED MEANS THE COUNT UP FUNCTION IS IN ITS CRITICAL SECTION
     green_led = 1;
     for (unsigned int n=0; n<N; n++) {
-        counterLock.lock();
-        counter++; 
-        counter++;
-        counter++;
-        counter++;
-        counter++;
-        counter++;
-        counter++;
-        counter++;
-        counter++;
-        counter++; 
-        counterLock.unlock();          
+        if (counterLock.trylock_for(5s)) {
+            counter++; 
+            counter++;
+            counter++;
+            counter++;
+            counter++;
+            counter++;
+            counter++;
+            counter++;
+            counter++;
+            counter++; 
+            counterLock.unlock();   
+        }
+        else
+        {
+            printf("GREEN LED DEADLOCK DETECTED @Line 37");
+        }
+               
     }  
     green_led = 0; 
     
@@ -57,18 +63,24 @@ void countDown()
     //YELLOW MEANS THE COUNT DOWN FUNCTION IS IN ITS CRITICAL SECTION
     yellow_led = 1;
     for (unsigned int n=0; n<N; n++) {
-        counterLock.lock();
-        counter--;
-        counter--;
-        counter--;
-        counter--;
-        counter--;
-        counter--;
-        counter--;
-        counter--;
-        counter--;
-        counter--;   
-        counterLock.unlock();        
+        if (counterLock.trylock_for(5s)) {
+            counter--;
+            counter--;
+            counter--;
+            counter--;
+            counter--;
+            counter--;
+            counter--;
+            counter--;
+            counter--;
+            counter--;   
+            counterLock.unlock();   
+        }
+        else
+        {
+            printf("YELLOW LED DEADLOCK DETECTED @Line 66");
+        }
+     
     }
     yellow_led = 0;
     
@@ -95,10 +107,16 @@ int main() {
         t2.start(countDown);
 
         //INDUCE A DEADLOCK
-        counterLock.lock(); // Add one extra lock (oops)
-        t1.join();  //Wait for t1 to complete
-        t2.join();  //Wait for t2 to complete
-        counterLock.unlock(); //Release again
+        if (counterLock.trylock_for(5s)==true)
+        {
+            t1.join();  //Wait for t1 to complete
+            t2.join();  //Wait for t2 to complete
+            counterLock.unlock(); //Release again     
+        } // Add one extra lock (oops)
+        else 
+        {
+            printf("DEADLOCK DETECTED @Line 98");
+        }
     }
     
     //Did the counter end up at zero?
