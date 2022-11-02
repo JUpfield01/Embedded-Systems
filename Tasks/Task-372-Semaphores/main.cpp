@@ -6,10 +6,10 @@
 #include <cstdio>
 using namespace uop_msb;
  
-Semaphore sem1;
-Semaphore sem2(10);
+Semaphore sem1(5); // Set size to 5 as we want to count 0..10 The starting value is 5 so we need to go 5 below it to reach 0
+Semaphore sem2(5); // Set size to 5 as need to count to 10 and the start value is 5. sem2 is used to count up and sem1 down, hence why each is set in the way it is.
 Mutex countLock;
-uint16_t counter = 0;
+uint16_t counter = 5;
 Thread t1;
 Thread t2;
 
