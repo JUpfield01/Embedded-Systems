@@ -33,7 +33,7 @@ volatile int counter = 0;
 // * Note the speed difference for this particular case.
 // *************************************************************
 
-#define SPIN
+//#define SPIN
 
 void inline increment()
 {

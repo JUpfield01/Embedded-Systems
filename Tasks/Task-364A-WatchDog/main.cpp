@@ -29,3 +29,6 @@ int main()
         ThisThread::sleep_for(1ms * (TIMEOUT_MS / 10));
     }
 }
+
+callback(<func name>, );
+

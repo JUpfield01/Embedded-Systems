@@ -6,6 +6,8 @@ using namespace uop_msb;
 Ticker ISR_Tick;
 Thread t1;
 
+Mutex lock; 
+
 void signalISR() {
     t1.flags_set(1); 
 }
@@ -22,7 +24,7 @@ void task1(float* avg_) {
     AnalogIn LDR(AN_LDR_PIN);  
 
     ThisThread::flags_clear(1);
-
+    
     while(true) { 
         float &avg=*avg_; 
 
@@ -40,10 +42,13 @@ void task1(float* avg_) {
         sum+= LDR.read(); 
         count ++;
 
+        lock.lock();
         avg = sum/count;
+        lock.unlock();
     
         ThisThread::flags_clear(1);
     }
+    
     
 }
 
@@ -70,7 +75,9 @@ int main(void)
 
     while (true) {
         //printf("\n%f",avg/1000); // Weird bug when doing it this way, for some reason decays to 0 but after that is fine. 
+        lock.lock();
         printf("\n%f",avg);
+        lock.unlock();
         ThisThread::sleep_for(1000ms);
     }
     
