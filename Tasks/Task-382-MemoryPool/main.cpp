@@ -63,6 +63,11 @@ void switchISR() {
     //Write to queue
     bool ok = queue.try_put(message);    //Note we are sending the "pointer"
     
+    while(buttonA==1){
+        //redLED = !redLED;
+        //wait_us(1000000);
+    }
+
     //Check if succesful
     if (!ok) {
         redLED = 1; 
@@ -80,6 +85,10 @@ void thread1()
         //Block on the queue
         bool ok = queue.try_get_for(10s, &payload);
         
+        while(buttonB==1){
+            
+        }
+
         //Check status
         if (ok) {
             //Make a copy

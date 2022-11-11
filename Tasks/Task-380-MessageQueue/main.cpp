@@ -21,6 +21,9 @@ Thread t1;
 //Queues - "A message can be a integer or pointer value  to a certain type T that is sent to a thread or interrupt service routine."
 Queue<uint32_t, 10> queue;
 
+//Timeout time (1s)
+const uint32_t TIMEOUT_MS = 1000;
+
 // Call this on precise intervals
 void ISR() {
     
@@ -34,8 +37,13 @@ void ISR() {
     bool sent = queue.try_put((uint32_t*)sample); //Non-blocking
     
     //Check if succesful
-    if (!sent) {
-        redLED = 1; 
+    if (sent) {
+         //If successfully sent kick watchdog to prevent timeout
+        Watchdog::get_instance().kick();
+    }
+    else {
+        //If not sent then buffer is full, toggle red led and let watchdog reset device
+       redLED = 1;
     }
 }
 
@@ -75,10 +83,16 @@ int main() {
                
     //Threads
     t1.start(thread1);
+
+    //Create & start watchdog
+    Watchdog &watchdog = Watchdog::get_instance();
+    watchdog.start(TIMEOUT_MS);
+    fflush(stdout);
     
     printf("Main Thread\n");
     while (true) {
         ThisThread::sleep_for(500ms);
         greenLED = !greenLED;
+        
     }
 }
