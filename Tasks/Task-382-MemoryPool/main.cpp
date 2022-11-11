@@ -100,6 +100,7 @@ void thread1()
             printf("Float Value: %.2f\t",    msg.fValue);
             printf("SW1: %u\t",              msg.sw1State);
             printf("SW2: %u\n\r",            msg.sw2State);
+            Watchdog::get_instance().kick();
         } else {
             //TODO: Handle timeout
             printf("Timeout!\n");
@@ -118,9 +119,19 @@ int main() {
     //Start message
     printf("Welcome\n");           
    
-    //Hook up interrupts   
-    Ticker timer; 
-    timer.attach(&switchISR, 100ms);
+    //Hook up interrupts -- depreceated   
+    //Ticker timer; 
+    //timer.attach(&switchISR, 100ms);
+
+    InterruptIn btnA(BTN1_PIN);
+    InterruptIn btnB(BTN2_PIN);
+
+    Watchdog &watchdog = Watchdog::get_instance();
+    watchdog.start(30000);
+
+    btnA.rise(&switchISR);
+    btnB.rise(&switchISR);
+
                
     //Threads
     t1.start(thread1);
