@@ -88,4 +88,5 @@ void addSample(long long dur) {
 //Flashing LED 
 void heartBeat() {
     redLED = !redLED;
+    workerQueue.call(printf, "Main Thread Alive\n");  
 }
