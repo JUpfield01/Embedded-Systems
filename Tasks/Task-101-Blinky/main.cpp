@@ -21,12 +21,16 @@ int main()
         greenLED = 1; 
         redLED = 1; 
 
+        printf("LED ON");
+
         // Wait 0.2 second (1 million microseconds)
         wait_us(100000); 
 
         // Turn LED OFF
         greenLED = 0;
         redLED = 0; 
+
+        printf("LED OFF");
 
         // Wait 0.2 second
         wait_us(100000); 
