@@ -1,4 +1,4 @@
-#include "uop_msb.h"
+/*#include "uop_msb.h"
 using namespace uop_msb;
 
 #include "string.h"
@@ -19,13 +19,15 @@ Thread t1;
 //Class type
 class message_t {
 public:    
-    double xAngle;    
-    double yAngle;
+    float fValue;    
+    int sw1State;
+    int sw2State;
     
     //Constructor
-    message_t(double x, double y) {
-        xAngle = x;
-        yAngle = y; 
+    message_t(float f, int s1, int s2) {
+        fValue = f;
+        sw1State = s1;
+        sw2State = s2;    
     }
 };
  
@@ -35,14 +37,17 @@ public:
 //Message queue - matched to the memory pool
 // Queue<message_t, 16> queue;
 
-Mail<message_t, 1000> mail_box;
+Mail<message_t, 16> mail_box;
 
 // Call this on precise intervals
 void switchISR() {
     
     //Read sample - make a copy
-    double xSample = 0.01f*(float)(rand()%1000);
-    double ySample = 0.01f*(float)(rand()%1000);
+    float sample = 0.01f*(float)(rand() % 100);
+
+    //Grab switch state
+    uint32_t switch1State = buttonA;
+    uint32_t switch2State = buttonB;
     
     //Allocate a block from the memory pool (non blocking version)
     //For a thread context, there is also a blocking version (with timeout)
@@ -54,12 +59,13 @@ void switchISR() {
     }
     
     //Fill in the data
-    message->xAngle   = xSample;
-    message->yAngle = ySample;
+    message->fValue   = sample;
+    message->sw1State = switch1State;
+    message->sw2State = switch2State;
     
     //Write pointer to the queue
     osStatus stat = mail_box.put(message);    //Note we are sending the "pointer" not the data
-    
+*/
     /*
     typedef enum {
     osOK                      =  0,         ///< Operation completed successfully.
@@ -72,7 +78,7 @@ void switchISR() {
     osStatusReserved          = 0x7FFFFFFF  ///< Prevents enum down-size compiler optimization.
     } osStatus_t;
     */
-
+/*
     //Check if succesful
     if (stat != osOK) {
         redLED = 1; 
@@ -97,13 +103,14 @@ void thread1()
         //Check status
         if (payload) {
             //Make a copy
-            message_t msg(payload->xAngle, payload->yAngle);
+            message_t msg(payload->fValue, payload->sw1State, payload->sw2State);
             //We are done with this, so give back the memory to the pool
             mail_box.free(payload);
             
             //Echo to the terminal
-            printf("xAngle: %f\n",    msg.xAngle);
-            printf("yAngle: %f\n",    msg.yAngle);
+            printf("Float Value: %.2f\t",    msg.fValue);
+            printf("SW1: %u\t",              msg.sw1State);
+            printf("SW2: %u\n\r",            msg.sw2State);
         } else {
             //ERROR HANDLER TO BE DONE
 
@@ -124,7 +131,7 @@ int main() {
    
     //Hook up interrupts   
     Ticker timer; 
-    timer.attach(&switchISR, 10ms);
+    timer.attach(&switchISR, 100ms);
                
     //Threads
     t1.start(thread1);
@@ -135,3 +142,4 @@ int main() {
         puts("Main Thread Alive");
     }
 }
+*/

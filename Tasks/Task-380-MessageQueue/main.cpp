@@ -18,8 +18,14 @@ void switchISR();
 //Threads
 Thread t1;
 
+struct angleData {
+    float xAngle;
+    float yAngle;
+    float zAngle;
+};
+
 //Queues - "A message can be a integer or pointer value  to a certain type T that is sent to a thread or interrupt service routine."
-Queue<uint32_t, 10> queue;
+Queue<angleData, 10> queue;
 
 //Timeout time (1s)
 const uint32_t TIMEOUT_MS = 1000;
@@ -31,10 +37,17 @@ void ISR() {
     if (buttonA == 1) return;
     
     //Random sample
-    uint32_t sample = rand();
+    angleData sample;
+    sample.xAngle=0.01*(rand()%100);
+    sample.yAngle=0.01*(rand()%100);
+    sample.zAngle=0.01*(rand()%100);
+
+    //uint32_t sample = rand();
+
+    angleData* msg = &sample;
     
     //Write to queue as 32-bit integer (same size as pointer)
-    bool sent = queue.try_put((uint32_t*)sample); //Non-blocking
+    bool sent = queue.try_put(msg); //Non-blocking
     
     //Check if succesful
     if (sent) {
@@ -52,11 +65,16 @@ void thread1()
 {    
     while (true) {
         //Read queue - block (with timeout)
-        uint32_t* rx;   // Fancy type for a 32-bit integer :)
+        angleData* rx;   // Fancy type for a 32-bit integer :)
         bool success = queue.try_get_for(10s, &rx); //Blocks for 10s if there is no data
         
+        angleData &test = *rx;
+
+        float poop = test.xAngle;
+        //float poop = 5;
+
         if (success) {
-            printf("value: %u\n", (uint32_t)rx);
+            printf("value: %f\n", rx->xAngle);
         } else {
             printf("Receive timeout\n");
             yellowLED = 1;

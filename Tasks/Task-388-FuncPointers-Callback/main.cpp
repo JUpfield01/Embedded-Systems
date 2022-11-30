@@ -10,8 +10,13 @@ using namespace std;
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
 
+//Thread to handle terminal output
+Thread t2; 
+
 //Event queue for main
 EventQueue mainQueue;
+EventQueue t2Queue; 
+
 
 //Flash a given LED - parameter passed by reference
 void flashLed(DigitalOut& led) {
@@ -20,19 +25,38 @@ void flashLed(DigitalOut& led) {
  
 void flashLed1() {
     // This is NOT on the main thread
-    flashLed(led1);                         
+    mainQueue.call(flashLed, led1);                         
     //Dispatch printf on main thread
-    mainQueue.call(printf, "Button A\n");    
+    t2Queue.call(printf, "Button A\n");    
 }
 
 void flashLed2() {
-    flashLed(led2);     
-    mainQueue.call(printf, "Button B\n");
+    mainQueue.call(flashLed, led2);    
+    t2Queue.call(printf, "Button B\n");
 }
 
-int main() {  
+void task2() {
+    t2Queue.dispatch_forever();
+
+    while (true) {
+
+    }
+}
+
+void printButton() {
+    printf("Button Pressed: \n");
+}
+
+int main() {
+
+    printf("Starting Main...\n");
+
+    t2.start(task2);
+    t2.set_priority(osPriorityLow);
+
     PressAndRelease btnA(BTN1_PIN, &flashLed1);
     PressAndRelease btnB(BTN2_PIN, &flashLed2);
+
     //Start main queue - dispatch
     mainQueue.dispatch_forever();
 }

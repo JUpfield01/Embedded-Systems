@@ -14,6 +14,7 @@ void LCD_BackLight_Effect();
 void Bar_Flash();
 void clearMatrix();
 void matrix_scan();
+void matrix_bars();
 int seg7num(int);
 void seg7clear();
 void count_thread();
@@ -42,39 +43,40 @@ int main()
 //printf("read second time\n");
         //read_sdcard();
     
-    seg7clear();
+    //seg7clear();
 
-    Traffic_Lights_2.output();
-    Traffic_Lights_2.mode(OpenDrainNoPull);
-    Traffic_Lights_2=1;
+    //Traffic_Lights_2.output();
+    //Traffic_Lights_2.mode(OpenDrainNoPull);
+    //Traffic_Lights_2=1;
 
-    Pedestrian.output();
-    Pedestrian.mode(OpenDrainNoPull);
+    //Pedestrian.output();
+    //Pedestrian.mode(OpenDrainNoPull);
 
-    Pedestrian=0;
-    ThisThread::sleep_for(DELAY);//    wait_us(1000000);
-    Pedestrian=1;
+    //Pedestrian=0;
+    //ThisThread::sleep_for(DELAY);//    wait_us(1000000);
+    //Pedestrian=1;
 
     // 7 segment display setup
     spi.format(8,0);            // 8bits, Rising edge, +VE Logic Data
     spi.frequency(1000000);     //1MHz Data Rate
     oe=0;                       //Enable Output NB can be more selective than this if you wish
     
-    char switchNum=' ';
+    //char switchNum=' ';
     printf("Starting Program..\n");
-    t1.start(Traffic_Lights);
-    t2.start(LCD_BackLight_Effect);
-    t3.start(Bar_Flash);
-    t4.start(matrix_scan);
-    t5.start(count_thread);
-    t6.start(environment_data);
+    //t1.start(Traffic_Lights);
+    //t2.start(LCD_BackLight_Effect);
+    //t3.start(Bar_Flash);
+    //t4.start(matrix_scan);
+    t4.start(matrix_bars);
+    //t5.start(count_thread);
+    //t6.start(environment_data);
 
-    myLCD.cls();
-    myLCD.printf("SECaM PU");
-    myLCD.locate(0,1);myLCD.printf("Switch=");
-    buzzer.period_us(2273);
+    //myLCD.cls();
+    //myLCD.printf("SECaM PU");
+    //myLCD.locate(0,1);myLCD.printf("Switch=");
+    //buzzer.period_us(2273);
     //buzzer=0.5f;wait_us(200000);buzzer=0;
-
+/*
     while(true){
         if (swA)switchNum='A';
         if (swB)switchNum='B';
@@ -94,6 +96,10 @@ int main()
         switchNum=0;
         wait_us(200000);
     }
+    */
+    while (true) {
+
+    };
 }
 
 
@@ -183,6 +189,34 @@ void Bar_Flash()
 
 }
 
+const unsigned char test[] = {
+    0xFF,0x18,0x18,0x18,0x18,0x18,0x18,0xFF
+};
+
+void writeSPI() {
+
+}
+
+void matrix_bars() {
+    while(true) {
+        //for (int i=1; i<9; i++) {
+            cs=0; 
+            spi.write(0x81);  //COL RHS
+            spi.write(0x00);   //COL LHS
+            spi.write(0);   //ROW RHS
+            //spi.write(1);   //ROW RHS
+            cs=1;
+
+            cs=0; 
+            spi.write(0x81);  //COL RHS
+            spi.write(0x00);   //COL LHS
+            spi.write(1);   //ROW RHS
+            cs=1; 
+        //}
+              //Send Data to Matrix
+        //thread_sleep_for(1000);
+    }
+}
 
 void matrix_scan(void)
 {

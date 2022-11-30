@@ -14,23 +14,33 @@ void buttonPressedISR();
 void addSample(long long dur);
 void heartBeat();
 void workerThread();
+void test();
+void thread2();
  
 InterruptIn btn(USER_BUTTON);
 
 //Creates a queue with the default size
 EventQueue mainQueue;
 EventQueue workerQueue;
+EventQueue t2Q;
 
 Timer tmr1;
 Thread t1;
+Thread t2;
 
 //Buffer
 float arrayOfTimes[10];
+
+
 
 int main() {
     
     //Start worker queue
     t1.start(workerThread);
+
+    t2.start(thread2);
+
+    t1.set_priority(osPriorityAboveNormal);
 
     //Dispatch deferred one-off tasks to the queue in the worker thread
     workerQueue.call_in(3s, printf, "(Note the switch bounce)\n");
@@ -45,6 +55,8 @@ int main() {
     
     //Repeated dispatch - Background flash (backed by a Ticker) using queue on main thread
     mainQueue.call_every(2s, heartBeat);
+
+    t2Q.call_every(3s, test);
     
     //Set up queue on main thread as well
     mainQueue.dispatch_forever();
@@ -57,6 +69,10 @@ int main() {
 void workerThread()
 {
     workerQueue.dispatch_forever();
+}
+
+void thread2() {
+    t2Q.dispatch_forever();
 }
 
 void buttonPressedISR() { 
@@ -90,3 +106,8 @@ void heartBeat() {
     redLED = !redLED;
     workerQueue.call(printf, "Main Thread Alive\n");  
 }
+
+void test() {
+    workerQueue.call(printf, "poop");
+}
+

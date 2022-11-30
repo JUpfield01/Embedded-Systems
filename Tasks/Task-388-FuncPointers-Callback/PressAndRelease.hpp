@@ -16,7 +16,7 @@ private:
 
     // ISR for falling edge
     void button_fall() {
-        t1.flags_set(BTN_RELEASE);    
+        t1.flags_set(BTN_RELEASE);  
     }
 
     // Main thread loop that handles all the events
@@ -29,7 +29,6 @@ private:
             ThisThread::sleep_for(50ms);                                    //Debounce
             ThisThread::flags_clear(BTN_PRESS);                             //Clear any additional signals (due to bounce)
             button.fall(callback(this, &PressAndRelease::button_fall));     //Enable ISR for switch release
-
             ThisThread::flags_wait_all(BTN_RELEASE);                    
             button.fall(NULL);
             ThisThread::sleep_for(50ms);
