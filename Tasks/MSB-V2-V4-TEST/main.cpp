@@ -23,6 +23,7 @@ float potav();
 void environment_data();
 int write_sdcard();
 int read_sdcard();
+void quantise();
 
 Thread t1;
 Thread t2;
@@ -68,7 +69,8 @@ int main()
     //t2.start(LCD_BackLight_Effect);
     //t3.start(Bar_Flash);
     //t4.start(matrix_scan);
-    t4.start(matrix_bars);
+    t4.start(quantise);
+    //t4.start(matrix_bars);
     //t5.start(count_thread);
     //t6.start(environment_data);
 
@@ -241,6 +243,7 @@ float* quantise (float values[]) {
     return values;
 }*/
 
+/*
 void quantise () {
     float values[] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
     
@@ -300,12 +303,7 @@ void quantise () {
     // return quantised results
     //return values;
 }
-
-/*
-#include <iostream>
-#include <cmath>
-
-using namespace std;
+*/
 
 void quantise () {
     float values[] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
@@ -341,7 +339,7 @@ void quantise () {
     // quantise results using newly claculated scale
     for (int i=0; i<arraySize/2; i++) {
         averaged_values[i]=round(averaged_values[i] / scale) * scale;
-        cout << averaged_values[i] << endl;
+        //cout << averaged_values[i] << endl;
     }
     
     struct matrix_metadata{ 
@@ -356,47 +354,81 @@ void quantise () {
         led_matrix_data[i].row = row;
         led_matrix_data[i].col = i;
         
-        cout << "row " << led_matrix_data[i].row << " | col: " << led_matrix_data[i].col << endl;
+        //cout << "row " << led_matrix_data[i].row << " | col: " << led_matrix_data[i].col << endl;
     }
 
     // return quantised results
     //return values;
     
-    cout << endl;
+    //cout << endl;
     
     int matrix_array[8][16]={0};
-    int colo = 0;
     
-    for (int i=0; i<16; i++) {
-        for (int j=0; j<8; j++) {
-            if (led_matrix_data[i].row>=j) {
-                matrix_array[j][i] = 1;
+    for (int j=0; j<16; j++) {
+            for (int i=0; i<led_matrix_data[j].row; i++) {
+               matrix_array[i][j] = 1; 
             }
-            else {
-                matrix_array[j][i] = 0;
-            }
-            
-            cout << matrix_array[i][j];
-        }
-        cout << endl;
     }
-     
     
-    /*
-    for (int i=0; i<8; i++) {
-        for (int j=0; j<16; j++) {
-            if (i <= led_matrix_data[i].row) {
-                colo = led_matrix_data[i].col;
-                matrix_array[i][colo]=1;
-            }
-            cout << matrix_array[i][colo];
+    uint8_t result=0;
+    
+    int decimal = 0;
+    int decimal2 = 0;
+    
+    int led_values_lhs[8]={0};
+    int led_values_rhs[8]={0};
+    
+    for (int j=0; j<8; j++) {
+        for (int i=7; i>=0; i--) {
+            //cout << matrix_array[7][i];
+            //result |= matrix_array[7][i] << (8-i);
+            //printf("%x", result);
+            decimal = decimal << 1 | matrix_array[j][i];
         }
-        cout << endl;
+        //cout << decimal << ", ";
+        led_values_lhs[j]=decimal;
+        decimal=0;
     }
-    */
-    /*
+    
+    //cout << endl;
+    //cout << endl;
+    
+    
+    for (int j=0; j<8; j++) {
+        for (int i=15; i>=8; i--) {
+            //cout << matrix_array[7][i];
+            //result |= matrix_array[7][i] << (8-i);
+            //printf("%x", result);
+            decimal2 = decimal2 << 1 | matrix_array[j][i];
+        }
+        //cout << decimal2 << ",";
+        led_values_rhs[j]=decimal2;
+        decimal2=0;
+    }
+    
+    //cout << endl;
+    //cout << endl;
+
+// To-do: 
+    // -> connect to DFT output 
+    // -> convert to a class
+
+    while (true) {
+        for (int i=0; i<8; i++) {
+
+            cs=0;
+            spi.write(led_values_rhs[i]);
+            spi.write(led_values_lhs[i]);
+            spi.write(i);
+            cs=1;
+
+        
+        }
+    }
+  
 }
-*/
+
+
 
 /*
 int main() {
@@ -443,7 +475,16 @@ void illuminate (float values[], float largest) {
 
 void matrix_bars() {
     while(true) {
+        
+            cs=0;
+            spi.write(7);
+            spi.write(0);
+            spi.write(1);
+            cs=1;
+
+
         //for (int i=1; i<9; i++) {
+            
             /*
             cs=0; 
             spi.write(0xFF);  //COL RHS
@@ -487,13 +528,13 @@ void matrix_bars() {
             spi.write(0x00);   //COL LHS
             spi.write(6);   //ROW RHS
             cs=1; 
-            */
-
+            
             cs=0; 
             spi.write(0x3E);  //COL RHS
             spi.write(0x00);   //COL LHS
             spi.write(6);   //ROW RHS
             cs=1; 
+            */
         //}
               //Send Data to Matrix
         //thread_sleep_for(1000);
