@@ -7,6 +7,7 @@
 #include "F429_Mega_Shell_Header.h"
 #include "TextLCD/TextLCD.h"
 #include <cstdio>
+//#include <cmath>
 
 //prototypes
 void Traffic_Lights();
@@ -209,14 +210,210 @@ float getLargest (float values[]) {
     return largest;
 }
 
-float* quantise (float values[], float largest) {
-    float scale = largest/8;
-    int arraySize = sizeof(values)/sizeof(values[0]);
-    for (int i=0; i<arraySize; i++) {
-        values[i]=round(values[i] / scale) * scale;
+/*
+float* quantise (float values[]) {
+    //float scale = largest/8;
+    float scale=0;
+    float largest=0;
+    int arraySize=sizeof(values)/sizeof(values[0]);
+    float averaged_values[(arraySize/2)]; 
+
+    // average samples, reducing sample from 32 results to 16
+    for (int i=0; i<arraySize/2; i+=2) {
+        averaged_values[i] = (values[i] + values[i+1])/2;
+    };
+
+    // get largest value from avereaged values
+    for (int i=0; i<arraySize/2; i++) {
+        if (values[i]>largest) {
+            largest=values[i];
+        }
+    } 
+
+    scale = largest/8;
+
+    // quantise results using newly claculated scale
+    for (int i=0; i<arraySize/2; i++) {
+        averaged_values[i]=round(averaged_values[i] / scale) * scale;
     }
+
+    // return quantised results
     return values;
+}*/
+
+void quantise () {
+    float values[] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
+    
+    float scale=0.0;
+    float largest=0.0;
+    int row=0;
+    int arraySize=sizeof(values)/sizeof(values[0]);
+    float averaged_values[(arraySize/2)]; 
+
+    // average samples, reducing sample from 32 results to 16
+    
+    volatile int j = 0;
+    
+    for (int i=0; i<arraySize/2; i++) {
+        averaged_values[i] = (values[j] + values[j+1])/2;
+        //cout << averaged_values[i] << " = " << values[j] << " + " << values[j+1] << endl;
+        j+=2;
+        //cout << averaged_values[i] << endl;
+    };
+
+    // get largest value from avereaged values
+    for (int i=0; i<arraySize/2; i++) {
+        if (averaged_values[i]>largest) {
+            largest=averaged_values[i];
+            //cout << "New largest: " << largest << endl;
+        }
+    } 
+
+
+    scale = largest/8.0;
+    //cout << "Scale: " << scale << endl;;
+
+    // quantise results using newly claculated scale
+    for (int i=0; i<arraySize/2; i++) {
+        averaged_values[i]=round(averaged_values[i] / scale) * scale;
+        //cout << averaged_values[i] << endl;
+    }
+    
+    struct matrix_metadata{ 
+        int row;
+        int col;
+    };   
+    
+    matrix_metadata led_matrix_data[arraySize/2];
+    
+    for (int i=0; i<arraySize/2; i++) {
+        row = (int)((averaged_values[i]/largest)*8);
+        led_matrix_data[i].row = row;
+        led_matrix_data[i].col = i;
+        
+        //cout << "row " << led_matrix_data[i].row << " | col: " << led_matrix_data[i].col << endl;
+    }
+
+
+
+
+    // return quantised results
+    //return values;
 }
+
+/*
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+void quantise () {
+    float values[] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
+    
+    float scale=0.0;
+    float largest=0.0;
+    int row=0;
+    int arraySize=sizeof(values)/sizeof(values[0]);
+    float averaged_values[(arraySize/2)]; 
+
+    // average samples, reducing sample from 32 results to 16
+    
+    volatile int j = 0;
+    
+    for (int i=0; i<arraySize/2; i++) {
+        averaged_values[i] = (values[j] + values[j+1])/2;
+        //cout << averaged_values[i] << " = " << values[j] << " + " << values[j+1] << endl;
+        j+=2;
+        //cout << averaged_values[i] << endl;
+    };
+
+    // get largest value from avereaged values
+    for (int i=0; i<arraySize/2; i++) {
+        if (averaged_values[i]>largest) {
+            largest=averaged_values[i];
+            //cout << "New largest: " << largest << endl;
+        }
+    } 
+
+    scale = largest/8.0;
+    //cout << "Scale: " << scale << endl;;
+
+    // quantise results using newly claculated scale
+    for (int i=0; i<arraySize/2; i++) {
+        averaged_values[i]=round(averaged_values[i] / scale) * scale;
+        cout << averaged_values[i] << endl;
+    }
+    
+    struct matrix_metadata{ 
+        int row;
+        int col;
+    };   
+    
+    matrix_metadata led_matrix_data[arraySize/2];
+    
+    for (int i=0; i<arraySize/2; i++) {
+        row = (int)((averaged_values[i]/largest)*8);
+        led_matrix_data[i].row = row;
+        led_matrix_data[i].col = i;
+        
+        cout << "row " << led_matrix_data[i].row << " | col: " << led_matrix_data[i].col << endl;
+    }
+
+    // return quantised results
+    //return values;
+    
+    cout << endl;
+    
+    int matrix_array[8][16]={0};
+    int colo = 0;
+    
+    for (int i=0; i<16; i++) {
+        for (int j=0; j<8; j++) {
+            if (led_matrix_data[i].row>=j) {
+                matrix_array[j][i] = 1;
+            }
+            else {
+                matrix_array[j][i] = 0;
+            }
+            
+            cout << matrix_array[i][j];
+        }
+        cout << endl;
+    }
+     
+    
+    /*
+    for (int i=0; i<8; i++) {
+        for (int j=0; j<16; j++) {
+            if (i <= led_matrix_data[i].row) {
+                colo = led_matrix_data[i].col;
+                matrix_array[i][colo]=1;
+            }
+            cout << matrix_array[i][colo];
+        }
+        cout << endl;
+    }
+    */
+    /*
+}
+*/
+
+/*
+int main() {
+    /*
+    float sample[] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816};
+    
+    int sampleArraySize = sizeof(sample)/sizeof(sample[0]);
+    
+    float quantised[sampleArraySize] = quantise(sample);
+    */
+    /*
+    
+    quantise();
+
+    return 0;
+}
+*/
 
 void illuminate (float values[], float largest) {
     bool time_up=false;
