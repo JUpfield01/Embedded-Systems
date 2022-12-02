@@ -146,8 +146,7 @@ void Traffic_Lights(){
     }
 }
 
-void Bar_Flash()
-{
+void Bar_Flash() {
 
 //RGBled is the value of the Leds NB SHared Bus for Red Green and Blue
 //RGBcol will select the Capitalised Colour NB rgb lower case is all off
@@ -197,20 +196,106 @@ void writeSPI() {
 
 }
 
+float getLargest (float values[]) {
+    float largest=0;
+    float smallest=0;
+    int arraySize = sizeof(values)/sizeof(values[0]);
+    for (int i=0; i<arraySize; i++) {
+        if (values[i]>largest) {
+            largest=values[i];
+        }
+    } 
+
+    return largest;
+}
+
+float* quantise (float values[], float largest) {
+    float scale = largest/8;
+    int arraySize = sizeof(values)/sizeof(values[0]);
+    for (int i=0; i<arraySize; i++) {
+        values[i]=round(values[i] / scale) * scale;
+    }
+    return values;
+}
+
+void illuminate (float values[], float largest) {
+    bool time_up=false;
+    float scale = largest/8;
+    int arraySize = sizeof(values)/sizeof(values[0]);
+
+    for (int i=0; i<arraySize; i++) {
+        int mag = values[i]/scale;
+        for (int j=0; j<8; j++) {
+            
+        }
+
+        stopwatch.start();
+        while (!time_up) {
+            
+
+
+
+            if (duration_cast<std::chrono::milliseconds>(stopwatch.elapsed_time()).count() > 2000) {
+                time_up=true;
+            }
+        }
+    }
+    
+}
+
+
 void matrix_bars() {
     while(true) {
         //for (int i=1; i<9; i++) {
+            /*
             cs=0; 
-            spi.write(0x81);  //COL RHS
+            spi.write(0xFF);  //COL RHS
             spi.write(0x00);   //COL LHS
             spi.write(0);   //ROW RHS
             //spi.write(1);   //ROW RHS
             cs=1;
 
             cs=0; 
-            spi.write(0x81);  //COL RHS
+            spi.write(0x7C);  //COL RHS
             spi.write(0x00);   //COL LHS
             spi.write(1);   //ROW RHS
+            cs=1; 
+
+            cs=0; 
+            spi.write(0x78);  //COL RHS
+            spi.write(0x00);   //COL LHS
+            spi.write(2);   //ROW RHS
+            cs=1; 
+
+            cs=0; 
+            spi.write(0x38);  //COL RHS
+            spi.write(0x00);   //COL LHS
+            spi.write(3);   //ROW RHS
+            cs=1; 
+
+            cs=0; 
+            spi.write(0x30);  //COL RHS
+            spi.write(0x00);   //COL LHS
+            spi.write(4);   //ROW RHS
+            cs=1; 
+
+            cs=0; 
+            spi.write(0x10);  //COL RHS
+            spi.write(0x00);   //COL LHS
+            spi.write(5);   //ROW RHS
+            cs=1; 
+
+            cs=0; 
+            spi.write(0x10);  //COL RHS
+            spi.write(0x00);   //COL LHS
+            spi.write(6);   //ROW RHS
+            cs=1; 
+            */
+
+            cs=0; 
+            spi.write(0x3E);  //COL RHS
+            spi.write(0x00);   //COL LHS
+            spi.write(6);   //ROW RHS
             cs=1; 
         //}
               //Send Data to Matrix
