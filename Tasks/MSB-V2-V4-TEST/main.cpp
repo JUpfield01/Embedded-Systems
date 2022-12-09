@@ -23,7 +23,8 @@ float potav();
 void environment_data();
 int write_sdcard();
 int read_sdcard();
-void quantise();
+void quantise(float values[200]);
+void testSPI(int nums[2]);
 
 Thread t1;
 Thread t2;
@@ -36,7 +37,8 @@ Timer stopwatch;
 
 int main()
 {
-
+    int nums[] = {255, 7};
+    float values[] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
     printf("\n\nstarting...\n");
     //write_sdcard();
 
@@ -69,7 +71,7 @@ int main()
     //t2.start(LCD_BackLight_Effect);
     //t3.start(Bar_Flash);
     //t4.start(matrix_scan);
-    t4.start(quantise);
+    //t4.start(quantise, );
     //t4.start(matrix_bars);
     //t5.start(count_thread);
     //t6.start(environment_data);
@@ -101,7 +103,8 @@ int main()
     }
     */
     while (true) {
-
+        quantise(&values[0]);
+        //testSPI(&nums[0]);
     };
 }
 
@@ -305,28 +308,53 @@ void quantise () {
 }
 */
 
-void quantise () {
-    float values[] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
+/*
+void testSPI(int nums[2]) {
+    for (int i=0; i<8; i++) {
+        cs=0;
+        spi.write(nums[0]);
+        spi.write(nums[1]);
+        spi.write(i);
+        cs=1;        
+    }
+}
+*/
+
+
+void quantise (float values[32]) {
+    //float values[] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
     
+    for (int i=0; i<32; i++) {
+        //printf("%f\n", values[i]);
+    }
+
     float scale=0.0;
     float largest=0.0;
     int row=0;
-    int arraySize=sizeof(values)/sizeof(values[0]);
-    float averaged_values[(arraySize/2)]; 
+    //int arraySize=sizeof(values)/sizeof(values[0]);
+    int arraySize=32;
+    int counter=arraySize/2;
+
+    //printf("%d", counter);
+
+    float averaged_values[counter]; 
 
     // average samples, reducing sample from 32 results to 16
     
     volatile int j = 0;
     
-    for (int i=0; i<arraySize/2; i++) {
+    //printf("PRINT ME");
+
+    for (int i=0; i<counter; i++) {
         averaged_values[i] = (values[j] + values[j+1])/2;
         //cout << averaged_values[i] << " = " << values[j] << " + " << values[j+1] << endl;
+        //printf("%f = %f + %f\n", averaged_values[i], values[j], values[j+1]);
         j+=2;
         //cout << averaged_values[i] << endl;
     };
 
     // get largest value from avereaged values
-    for (int i=0; i<arraySize/2; i++) {
+    for (int i=0; i<counter; i++) {
         if (averaged_values[i]>largest) {
             largest=averaged_values[i];
             //cout << "New largest: " << largest << endl;
@@ -334,10 +362,11 @@ void quantise () {
     } 
 
     scale = largest/8.0;
-    //cout << "Scale: " << scale << endl;;
+    //cout << "Scale: " << scale << endl;
 
-    // quantise results using newly claculated scale
-    for (int i=0; i<arraySize/2; i++) {
+
+    //quantise results using newly claculated scale
+    for (int i=0; i<counter; i++) {
         averaged_values[i]=round(averaged_values[i] / scale) * scale;
         //cout << averaged_values[i] << endl;
     }
@@ -347,14 +376,19 @@ void quantise () {
         int col;
     };   
     
-    matrix_metadata led_matrix_data[arraySize/2];
+    matrix_metadata led_matrix_data[counter];
     
-    for (int i=0; i<arraySize/2; i++) {
+//<counter
+
+    for (int i=0; i<24; i++) {
+        //printf("foor loop entered\n");
         row = (int)((averaged_values[i]/largest)*8);
         led_matrix_data[i].row = row;
         led_matrix_data[i].col = i;
         
         //cout << "row " << led_matrix_data[i].row << " | col: " << led_matrix_data[i].col << endl;
+
+        //printf("row: %i | col: %i\n", led_matrix_data[i].row, led_matrix_data[i].col);
     }
 
     // return quantised results
@@ -364,9 +398,16 @@ void quantise () {
     
     int matrix_array[8][16]={0};
     
+    //printf("matrix array part\n");
+
+    int matrixledsize=sizeof(led_matrix_data)/sizeof(led_matrix_data[0]);
+    //printf("size: %d\n", matrixledsize);
+
     for (int j=0; j<16; j++) {
             for (int i=0; i<led_matrix_data[j].row; i++) {
                matrix_array[i][j] = 1; 
+               //printf("data: %d ", led_matrix_data[j].row);
+               //printf("i: %i j: %i\n", i, j); 
             }
     }
     
@@ -378,6 +419,8 @@ void quantise () {
     int led_values_lhs[8]={0};
     int led_values_rhs[8]={0};
     
+    //printf("decimal part starting ...\n");
+
     for (int j=0; j<8; j++) {
         for (int i=7; i>=0; i--) {
             //cout << matrix_array[7][i];
@@ -387,8 +430,11 @@ void quantise () {
         }
         //cout << decimal << ", ";
         led_values_lhs[j]=decimal;
+        //printf("lhs: %d\n", led_values_lhs[j]);
         decimal=0;
     }
+
+    //printf("lhs done ...\n");
     
     //cout << endl;
     //cout << endl;
@@ -403,30 +449,50 @@ void quantise () {
         }
         //cout << decimal2 << ",";
         led_values_rhs[j]=decimal2;
+        //printf("rhs: %d\n", led_values_rhs[j]);
         decimal2=0;
     }
+
+    //printf("rhs done ...\n");
     
+    //printf("Getting ready to write values...\n");
+
     //cout << endl;
     //cout << endl;
 
-// To-do: 
+    // To-do: 
     // -> connect to DFT output 
     // -> convert to a class
 
+    //printf("writing\n");
+
     while (true) {
         for (int i=0; i<8; i++) {
-
             cs=0;
+            //int rhs=led_values_rhs[i];
+            //int lhs=led_values_lhs[i];
+            //int s_row=i;
             spi.write(led_values_rhs[i]);
             spi.write(led_values_lhs[i]);
             spi.write(i);
-            cs=1;
+            //printf("%d\n", led_values_rhs[i]);
+            //printf("%d\n", led_values_lhs[i]);
+            //printf("%d\n", i);
+            //printf("%d\n", led_values_rhs[i]);
+            //printf("%d\n", led_values_lhs[i]);
+            //printf("%d\n", i);
+            //printf("\n");
 
-        
+            //spi.write(255);
+            //spi.write(7);
+            //spi.write(i);
+            //printf("%d\n",i);
+            cs=1;        
         }
     }
-  
+
 }
+
 
 
 
