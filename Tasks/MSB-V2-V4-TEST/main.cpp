@@ -35,6 +35,13 @@ Thread t6;
 
 Timer stopwatch;
 
+
+class LED_Matrix {
+    public 
+
+};
+
+
 int main()
 {
     int nums[] = {255, 7};
