@@ -7,6 +7,7 @@
 #include "F429_Mega_Shell_Header.h"
 #include "TextLCD/TextLCD.h"
 #include <cstdio>
+#include <array>
 //#include <cmath>
 
 //prototypes
@@ -23,8 +24,12 @@ float potav();
 void environment_data();
 int write_sdcard();
 int read_sdcard();
-void quantise(float values[200]);
+void quantise(float values[32]);
 void testSPI(int nums[2]);
+
+EventQueue t3Queue;
+EventQueue t4Queue;
+EventQueue t5Queue;
 
 Thread t1;
 Thread t2;
@@ -35,10 +40,54 @@ Thread t6;
 
 Timer stopwatch;
 
+struct matrixData {
+    int leftSide[8]={0};
+    int rightSide[8]={0};
+};
+
+void task3() {
+    t3Queue.dispatch_forever();
+}
+
+void task4() {
+    t4Queue.dispatch_forever();
+}
+
+void task5() {
+    t5Queue.dispatch_forever();
+}
+
+void writeMatrix (matrixData matrixValues) {
+
+    for (int i=0; i<8; i++) {
+        cs=0;
+        //int rhs=led_values_rhs[i];
+        //int lhs=led_values_lhs[i];
+        //int s_row=i;
+        spi.write(matrixValues.rightSide[i]);
+        spi.write(matrixValues.leftSide[i]);
+        spi.write(i);
+        //printf("right: %d\n", matrixValues.rightSide[i]);
+        //printf("left: %d\n", matrixValues.leftSide[i]);
+        //printf("%d\n", i);
+        //printf("%d\n", led_values_rhs[i]);
+        //printf("%d\n", led_values_lhs[i]);
+        //printf("%d\n", i);
+        //printf("\n");
+
+        //spi.write(255);
+        //spi.write(7);
+        //spi.write(i);
+        //printf("%d\n",i);
+        cs=1;        
+    }
+
+}
+
 int main()
 {
     int nums[] = {255, 7};
-    float values[] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
+    float values[32] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
     printf("\n\nstarting...\n");
     //write_sdcard();
 
@@ -60,6 +109,10 @@ int main()
     //ThisThread::sleep_for(DELAY);//    wait_us(1000000);
     //Pedestrian=1;
 
+    for(int i=0; i<32; i++) {
+        printf("values @ %d: %f\n", i, values[i]);
+    }
+
     // 7 segment display setup
     spi.format(8,0);            // 8bits, Rising edge, +VE Logic Data
     spi.frequency(1000000);     //1MHz Data Rate
@@ -71,7 +124,10 @@ int main()
     //t2.start(LCD_BackLight_Effect);
     //t3.start(Bar_Flash);
     //t4.start(matrix_scan);
-    //t4.start(quantise, );
+    t4.start(task4);
+    t5.start(task5);
+
+    t4Queue.call_every(2s, quantise, values);
     //t4.start(matrix_bars);
     //t5.start(count_thread);
     //t6.start(environment_data);
@@ -102,10 +158,12 @@ int main()
         wait_us(200000);
     }
     */
+    /*
     while (true) {
         quantise(&values[0]);
         //testSPI(&nums[0]);
     };
+    */
 }
 
 
@@ -321,11 +379,11 @@ void testSPI(int nums[2]) {
 */
 
 
-void quantise (float values[32]) {
-    //float values[] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
+void quantise (float values[]) {
+    //values = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
     
     for (int i=0; i<32; i++) {
-        //printf("%f\n", values[i]);
+        printf("%f\n", values[i]);
     }
 
     float scale=0.0;
@@ -363,6 +421,7 @@ void quantise (float values[32]) {
 
     scale = largest/8.0;
     //cout << "Scale: " << scale << endl;
+    //printf("scale: %f", scale);
 
 
     //quantise results using newly claculated scale
@@ -421,6 +480,8 @@ void quantise (float values[32]) {
     
     //printf("decimal part starting ...\n");
 
+    matrixData matrixValues; 
+
     for (int j=0; j<8; j++) {
         for (int i=7; i>=0; i--) {
             //cout << matrix_array[7][i];
@@ -430,6 +491,7 @@ void quantise (float values[32]) {
         }
         //cout << decimal << ", ";
         led_values_lhs[j]=decimal;
+        matrixValues.leftSide[j]=decimal;
         //printf("lhs: %d\n", led_values_lhs[j]);
         decimal=0;
     }
@@ -449,9 +511,13 @@ void quantise (float values[32]) {
         }
         //cout << decimal2 << ",";
         led_values_rhs[j]=decimal2;
+        matrixValues.rightSide[j]=decimal2;
         //printf("rhs: %d\n", led_values_rhs[j]);
         decimal2=0;
     }
+
+    t5Queue.call_every(15ms, writeMatrix, matrixValues);
+
 
     //printf("rhs done ...\n");
     
@@ -466,6 +532,8 @@ void quantise (float values[32]) {
 
     //printf("writing\n");
 
+    
+/*
     while (true) {
         for (int i=0; i<8; i++) {
             cs=0;
@@ -490,6 +558,7 @@ void quantise (float values[32]) {
             cs=1;        
         }
     }
+    */
 
 }
 
