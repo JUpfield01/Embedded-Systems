@@ -24,7 +24,7 @@ float potav();
 void environment_data();
 int write_sdcard();
 int read_sdcard();
-void quantise(float values[32]);
+void quantise(array<float, 32> cleverValues);
 void testSPI(int nums[2]);
 
 EventQueue t3Queue;
@@ -87,14 +87,22 @@ void writeMatrix (matrixData matrixValues) {
 int main()
 {
     int nums[] = {255, 7};
+    array<float, 32> cleverValues = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
     float values[32] = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
+    
+    t4.start(task4);
+
     printf("\n\nstarting...\n");
-    //write_sdcard();
 
-  //  read_sdcard();
-
-//printf("read second time\n");
-        //read_sdcard();
+    while(true){
+        printf("write sd card\n");
+        t4Queue.call(write_sdcard);
+        printf("read sd card\n");
+        t4Queue.call(read_sdcard);
+        printf("read second time\n");
+        t4Queue.call(read_sdcard);
+        ThisThread::sleep_for(5000ms);
+    }
     
     //seg7clear();
 
@@ -109,6 +117,7 @@ int main()
     //ThisThread::sleep_for(DELAY);//    wait_us(1000000);
     //Pedestrian=1;
 
+/*
     for(int i=0; i<32; i++) {
         printf("values @ %d: %f\n", i, values[i]);
     }
@@ -126,8 +135,9 @@ int main()
     //t4.start(matrix_scan);
     t4.start(task4);
     t5.start(task5);
+    */
 
-    t4Queue.call_every(2s, quantise, values);
+    //t4Queue.call_every(2s, quantise, cleverValues);
     //t4.start(matrix_bars);
     //t5.start(count_thread);
     //t6.start(environment_data);
@@ -260,6 +270,7 @@ void writeSPI() {
 
 }
 
+/*
 float getLargest (float values[]) {
     float largest=0;
     float smallest=0;
@@ -272,6 +283,7 @@ float getLargest (float values[]) {
 
     return largest;
 }
+*/
 
 /*
 float* quantise (float values[]) {
@@ -379,11 +391,11 @@ void testSPI(int nums[2]) {
 */
 
 
-void quantise (float values[]) {
+void quantise (array<float, 32> cleverValues) {
     //values = {0.483873, 1.625253, 0.839204, 0.869297, 0.897305, 1.004262, 0.623505, 0.480197, 1.089175, 0.653027, 0.929283, 0.618130, 0.577199, 0.606022, 0.773732, 0.874227, 0.588949, 0.805187, 0.714122, 0.701207, 0.589595, 0.691449, 0.514599, 0.679395, 0.756901, 0.468627, 0.786273, 0.596040, 0.736816, 0.432151, 0.389424, 0.234184};
     
     for (int i=0; i<32; i++) {
-        printf("%f\n", values[i]);
+        printf("%f\n", cleverValues[i]);
     }
 
     float scale=0.0;
@@ -404,7 +416,7 @@ void quantise (float values[]) {
     //printf("PRINT ME");
 
     for (int i=0; i<counter; i++) {
-        averaged_values[i] = (values[j] + values[j+1])/2;
+        averaged_values[i] = (cleverValues[j] + cleverValues[j+1])/2;
         //cout << averaged_values[i] << " = " << values[j] << " + " << values[j+1] << endl;
         //printf("%f = %f + %f\n", averaged_values[i], values[j], values[j+1]);
         j+=2;
@@ -829,14 +841,17 @@ int write_sdcard()
     }
     
     FATFileSystem fs("sd", &sd);
-    FILE *fp = fopen("/sd/test.txt","w");
+    FILE *fp = fopen("/sd/test.txt","a"); //was w for write, now a for append
     if(fp == NULL) {
         error("Could not open file for write\n");
         sd.deinit();
         return -1;
     } else {
         //Put some text in the file...
-        fprintf(fp, "Martin Says Hi!\n");
+        for (int i=0; i<12; i++){
+            fprintf(fp, "Martin Says Hi! %d\n", i);
+        }
+        
         //Tidy up here
         fclose(fp);
         printf("SD Write done...\n");
